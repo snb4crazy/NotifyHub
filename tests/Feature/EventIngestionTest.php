@@ -55,6 +55,16 @@ class EventIngestionTest extends TestCase
         });
     }
 
-    
+    public function test_event_ingestion_requires_project_key(): void
+    {
+        $response = $this->postJson('/api/v1/events', [
+            'title' => 'Payment Failed',
+            'message' => 'Order #1234',
+            'severity' => 'critical',
+        ]);
+        
+        $response->assertUnauthorized();
+        $response->assertJsonPath('message', 'Invalid or missing project ingest key.');
+    }
 }
 
