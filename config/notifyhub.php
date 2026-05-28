@@ -28,8 +28,24 @@ return [
     |--------------------------------------------------------------------------
     */
     'push' => [
+        'driver' => env('NOTIFYHUB_PUSH_DRIVER', 'log'),
         'enabled' => env('NOTIFYHUB_PUSH_ENABLED', true),
         'minimum_severity' => env('NOTIFYHUB_PUSH_MIN_SEVERITY', 'error'),
+        'fcm' => [
+            'project_id' => env('NOTIFYHUB_FCM_PROJECT_ID'),
+            'client_email' => env('NOTIFYHUB_FCM_CLIENT_EMAIL'),
+            'private_key' => env('NOTIFYHUB_FCM_PRIVATE_KEY'),
+            'credentials_path' => env('NOTIFYHUB_FCM_CREDENTIALS_PATH'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mobile API
+    |--------------------------------------------------------------------------
+    */
+    'mobile' => [
+        'token_name' => env('NOTIFYHUB_MOBILE_TOKEN_NAME', 'mobile'),
     ],
 
     /*
