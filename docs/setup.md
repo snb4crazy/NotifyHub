@@ -21,10 +21,16 @@ If you use SQLite, make sure `database/database.sqlite` exists and `DB_CONNECTIO
 For the quickest MVP, bootstrap one project and reuse its ingest key in your Laravel apps.
 
 ```bash
-php artisan notifyhub:setup --name="Personal Alerts" --slug=personal-alerts
+php artisan notifyhub:setup \
+  --name="Personal Alerts" \
+  --slug=personal-alerts \
+  --owner-name="Owner" \
+  --owner-email="owner@example.com" \
+  --owner-password="secret-pass"
 ```
 
 The command prints the ingest key. Put that key into your sending apps as `X-Project-Key`.
+If owner credentials are provided, you can immediately log into the mobile API.
 
 ### Optional explicit key for testing
 
@@ -43,6 +49,7 @@ Use these `.env` values for a simple MVP:
 NOTIFYHUB_MODE=single
 NOTIFYHUB_DEFAULT_PROJECT_NAME=Personal Alerts
 NOTIFYHUB_DEFAULT_PROJECT_SLUG=personal-alerts
+NOTIFYHUB_PUSH_DRIVER=log
 NOTIFYHUB_PUSH_ENABLED=true
 NOTIFYHUB_PUSH_MIN_SEVERITY=error
 NOTIFYHUB_SENSITIVE_ROLES=owner,admin,triager
@@ -90,10 +97,41 @@ curl -X POST "https://your-notifyhub.example/api/v1/events" \
 - Validation + sanitization
 - Event storage
 - Async push dispatch scaffold
+- Sanctum token auth for the mobile API
+- Mobile feed, details, settings, and device registration endpoints
 - Initial project bootstrap command
 - Documentation for easy setup and team growth
 
-## 7) Next recommended steps
+## 7) Mobile API quick try
+
+```bash
+curl -X POST "http://127.0.0.1:8000/api/v1/mobile/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email":"owner@example.com",
+    "password":"secret-pass",
+    "device_name":"iPhone"
+  }'
+```
+
+Then call the mobile feed with the returned bearer token.
+
+## 8) Optional real FCM configuration
+
+Keep `NOTIFYHUB_PUSH_DRIVER=log` while testing locally.
+
+When you are ready to send real pushes, switch to:
+
+```env
+NOTIFYHUB_PUSH_DRIVER=fcm
+NOTIFYHUB_FCM_PROJECT_ID=your-firebase-project-id
+NOTIFYHUB_FCM_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com
+NOTIFYHUB_FCM_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+```
+
+You can also provide `NOTIFYHUB_FCM_CREDENTIALS_PATH=/absolute/path/to/service-account.json` instead of the inline email/private key pair.
+
+## 9) Next recommended steps
 
 - Add mobile auth with Laravel Sanctum.
 - Build project feed and event details endpoints.
