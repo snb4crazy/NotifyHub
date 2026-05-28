@@ -13,10 +13,12 @@ class Event extends Model
     protected $fillable = [
         'public_id',
         'project_id',
+        'event_type',
         'title',
         'message',
         'severity',
         'application',
+        'environment',
         'context',
         'sensitive_context',
         'fingerprint',
@@ -33,6 +35,14 @@ class Event extends Model
             'occurred_at' => 'datetime',
             'acknowledged_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Use the public UUID in API routes instead of the numeric ID.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'public_id';
     }
 
     public function project(): BelongsTo
