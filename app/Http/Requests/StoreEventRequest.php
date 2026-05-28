@@ -26,10 +26,12 @@ class StoreEventRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'event_type' => ['nullable', 'string', 'max:80'],
             'title' => ['required', 'string', 'max:140'],
             'message' => ['required', 'string', 'max:5000'],
             'severity' => ['required', Rule::in(['info', 'warning', 'error', 'critical'])],
             'application' => ['nullable', 'string', 'max:120'],
+            'environment' => ['nullable', 'string', 'max:50'],
             'context' => ['nullable', 'array'],
             'sensitive_context' => ['nullable', 'array'],
             'occurred_at' => ['nullable', 'date'],
