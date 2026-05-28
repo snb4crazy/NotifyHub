@@ -10,9 +10,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureProjectIngestKey
 {
+    /**
+     * Verify that the request carries a valid project ingest key.
+     *
+     * The middleware keeps authentication intentionally simple for the MVP: a project-scoped
+     * shared secret in a header. That makes the sender integration easy to copy into many apps,
+     * while still allowing a future move to HMAC signatures or more granular auth.
+     */
     public function handle(Request $request, Closure $next): Response
     {
-        $ingestKey = $request->header('X-Project-Key');
+        $ingestHeader = (string) config('notifyhub.security.ingest_header', 'X-Project-Key');
+        $ingestKey = $request->header($ingestHeader);
 
         if (! is_string($ingestKey) || $ingestKey === '') {
             return $this->unauthorizedResponse();
@@ -31,6 +39,9 @@ class EnsureProjectIngestKey
         return $next($request);
     }
 
+    /**
+     * Return a consistent JSON error for unauthorized ingestion attempts.
+     */
     protected function unauthorizedResponse(): JsonResponse
     {
         return response()->json([
