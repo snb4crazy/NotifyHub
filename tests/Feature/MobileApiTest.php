@@ -106,7 +106,52 @@ class MobileApiTest extends TestCase
         $details->assertJsonPath('data.can_view_sensitive', false);
         $details->assertJsonPath('data.sensitive_context', null);
     }
-    
-    
+
+    public function test_user_can_update_settings_and_register_device(): void
+    {
+        $user = User::factory()->create([
+            'password' => 'password',
+        ]);
+        
+        $project = Project::query()->create([
+            'name' => 'Personal Alerts',
+            'slug' => 'personal-alerts',
+            'ingest_key' => 'personal_ingest_key',
+        ]);
+        
+        $project->users()->attach($user->id, [
+            'role' => 'owner',
+            'can_view_sensitive' => true,
+        ]);
+        
+        $token = $user->createToken('mobile')->plainTextToken;
+        
+        $settings = $this->withToken($token)->putJson('/api/v1/mobile/settings', [
+            'timezone' => 'Europe/Kyiv',
+            'notification_preferences' => [
+                'push_enabled' => true,
+                'minimum_severity' => 'warning',
+            ],
+        ]);
+        
+        $settings->assertOk();
+        $settings->assertJsonPath('data.user.timezone', 'Europe/Kyiv');
+        $settings->assertJsonPath('data.notification_preferences.minimum_severity', 'warning');
+        
+        $device = $this->withToken($token)->postJson('/api/v1/mobile/devices', [
+            'name' => 'My iPhone',
+            'platform' => 'ios',
+            'fcm_token' => 'fcm_test_token_123',
+            'notifications_enabled' => true,
+        ]);
+        
+        $device->assertOk();
+        $device->assertJsonPath('status', 'registered');
+        
+        $settingsAfter = $this->withToken($token)->getJson('/api/v1/mobile/settings');
+        $settingsAfter->assertOk();
+        $settingsAfter->assertJsonPath('data.devices.0.platform', 'ios');
+        $settingsAfter->assertJsonPath('data.projects.0.role', 'owner');
+    }
 }
 
