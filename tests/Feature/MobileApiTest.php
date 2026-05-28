@@ -71,6 +71,42 @@ class MobileApiTest extends TestCase
         $details->assertJsonPath('data.sensitive_context.trace.0', 'frame1');
     }
 
+    public function test_viewer_receives_redacted_sensitive_context(): void
+    {
+        $user = User::factory()->create([
+            'password' => 'password',
+        ]);
+        
+        $project = Project::query()->create([
+            'name' => 'Operations',
+            'slug' => 'operations',
+            'ingest_key' => 'ops_ingest_key',
+        ]);
+        
+        $project->users()->attach($user->id, [
+            'role' => 'viewer',
+            'can_view_sensitive' => false,
+        ]);
+        
+        $event = Event::query()->create([
+            'public_id' => '81994339-601c-4e01-8580-cf5193a38fc6',
+            'project_id' => $project->id,
+            'event_type' => 'laravel.exception',
+            'title' => 'Cron failed',
+            'message' => 'Daily sync crashed',
+            'severity' => 'error',
+            'sensitive_context' => ['trace' => ['frame1']],
+            'acknowledged_at' => now(),
+        ]);
+        
+        $token = $user->createToken('viewer')->plainTextToken;
+        
+        $details = $this->withToken($token)->getJson('/api/v1/mobile/events/'.$event->public_id);
+        $details->assertOk();
+        $details->assertJsonPath('data.can_view_sensitive', false);
+        $details->assertJsonPath('data.sensitive_context', null);
+    }
+    
     
 }
 
