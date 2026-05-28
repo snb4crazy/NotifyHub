@@ -29,10 +29,12 @@ class EventIngestionController extends Controller
         $event = Event::query()->create([
             'public_id' => (string) Str::uuid(),
             'project_id' => $project->id,
+            'event_type' => $payload['event_type'] ?? 'generic',
             'title' => $this->sanitizeText($payload['title']),
             'message' => $this->sanitizeText($payload['message']),
             'severity' => $payload['severity'],
             'application' => isset($payload['application']) ? $this->sanitizeText($payload['application']) : null,
+            'environment' => isset($payload['environment']) ? $this->sanitizeText($payload['environment']) : null,
             'context' => $payload['context'] ?? null,
             'sensitive_context' => $payload['sensitive_context'] ?? null,
             'occurred_at' => $payload['occurred_at'] ?? null,
