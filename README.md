@@ -1,58 +1,99 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# NotifyHub
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+NotifyHub is a central notification server for multiple Laravel applications.
+Apps POST normalized events to a single API, NotifyHub stores them, and the system
+fans out mobile push notifications via FCM.
 
-## About Laravel
+The MVP is intentionally simple so one person can run it quickly, but the codebase
+is structured to grow into a multi-user team platform with project membership,
+redaction rules, and mobile feed APIs.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## What is implemented now
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- `POST /api/v1/events` for event intake.
+- Project-scoped ingest key authentication via `X-Project-Key`.
+- Validation, sanitization, and event persistence.
+- Queued push-dispatch scaffold.
+- Bootstrap command for creating the first project.
+- Docs for MVP setup and team expansion.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Quick start
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan notifyhub:setup --name="Personal Alerts" --slug=personal-alerts
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## MVP setup for one user
 
-## Contributing
+Use the defaults in `config/notifyhub.php` and `.env`:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```env
+NOTIFYHUB_MODE=single
+NOTIFYHUB_DEFAULT_PROJECT_NAME=Personal Alerts
+NOTIFYHUB_DEFAULT_PROJECT_SLUG=personal-alerts
+NOTIFYHUB_PUSH_ENABLED=true
+NOTIFYHUB_PUSH_MIN_SEVERITY=error
+NOTIFYHUB_SENSITIVE_ROLES=owner,admin,triager
+```
 
-## Code of Conduct
+Then send events using the ingest key created by `php artisan notifyhub:setup`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Team setup
 
-## Security Vulnerabilities
+For multiple users and projects, follow `docs/setup.md` and `docs/roadmap.md`.
+Recommended team pattern:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- one project per product or environment;
+- one ingest key per project;
+- role-based access (`owner`, `admin`, `triager`, `viewer`);
+- redact `sensitive_context` for users without permission.
+
+## API overview
+
+- `POST /api/v1/events` - intake events from Laravel apps.
+- Future mobile API - feed, details, settings, devices, and membership views.
+
+See `docs/api-contract.md` for the current request/response format.
+
+## Testing
+
+Run the full suite:
+
+```bash
+php artisan test
+```
+
+## Documentation
+
+- `docs/roadmap.md` - product phases, RBAC proposal, deliverables.
+- `docs/api-contract.md` - intake payload contract and response examples.
+- `docs/setup.md` - single-user MVP setup and team onboarding.
+
+## Extending the platform
+
+The code is built to swap infrastructure without rewriting the application layer:
+
+- replace `App\Services\LoggingPushGateway` with a real FCM adapter;
+- expand `App\Models\Project` membership and policies;
+- add Sanctum for mobile authentication;
+- introduce feed/details endpoints under `/api/v1`.
+
+## Laravel and agent-friendly notes
+
+Key classes and functions include detailed docblocks so humans and AI helpers can
+trace the flow quickly:
+
+- `app/Http/Controllers/Api/V1/EventIngestionController.php`
+- `app/Http/Middleware/EnsureProjectIngestKey.php`
+- `app/Http/Requests/StoreEventRequest.php`
+- `app/Services/ProjectBootstrapService.php`
+- `app/Jobs/SendEventPushJob.php`
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
