@@ -7,12 +7,20 @@ use Illuminate\Validation\Rule;
 
 class StoreEventRequest extends FormRequest
 {
+    /**
+     * The API key middleware already gates access, so this request only validates payload shape.
+     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
+     * Validate the normalized event payload received from Laravel apps.
+     *
+     * The rules intentionally stay strict on size and type so that the storage layer and the
+     * future mobile API can rely on a predictable event schema.
+     *
      * @return array<string, array<int, mixed>|string>
      */
     public function rules(): array

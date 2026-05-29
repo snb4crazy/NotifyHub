@@ -13,6 +13,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EventIngestionController extends Controller
 {
+    /**
+     * Accept an event from a sending application, store it, and acknowledge the request.
+     *
+     * The endpoint intentionally keeps the write path small and defers delivery to a queued job
+     * so the API stays fast even when push providers are slow or unavailable.
+     */
     public function store(StoreEventRequest $request): JsonResponse
     {
         /** @var Project $project */
@@ -37,7 +43,9 @@ class EventIngestionController extends Controller
             'acknowledged_at' => now(),
         ]);
 
-        SendEventPushJob::dispatch($event);
+        if ($this->shouldDispatchPush($event)) {
+            SendEventPushJob::dispatch($event);
+        }
 
         return response()->json([
             'status' => 'accepted',
@@ -45,9 +53,37 @@ class EventIngestionController extends Controller
         ], Response::HTTP_ACCEPTED);
     }
 
+    /**
+     * Normalize user-facing text before storing it.
+     */
     protected function sanitizeText(string $value): string
     {
         return trim(strip_tags($value));
+    }
+
+    /**
+     * Decide whether this event should fan out to mobile push notifications.
+     *
+     * The current MVP uses a simple severity threshold, while keeping the storage pipeline
+     * independent from delivery. This makes it easy to run the platform as a personal inbox
+     * or grow into a team workflow with stricter routing rules later.
+     */
+    protected function shouldDispatchPush(Event $event): bool
+    {
+        if (! config('notifyhub.push.enabled', true)) {
+            return false;
+        }
+
+        $severityWeights = [
+            'info' => 1,
+            'warning' => 2,
+            'error' => 3,
+            'critical' => 4,
+        ];
+
+        $minimumSeverity = (string) config('notifyhub.push.minimum_severity', 'error');
+
+        return ($severityWeights[$event->severity] ?? 0) >= ($severityWeights[$minimumSeverity] ?? 3);
     }
 }
 

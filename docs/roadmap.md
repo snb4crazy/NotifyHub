@@ -9,6 +9,20 @@ NotifyHub is the central alerting API for all your Laravel apps. Apps send norma
 - Fast mobile experience: feed, details, per-user settings.
 - Decoupled delivery pipeline (event storage first, push dispatch async).
 
+## MVP operating model
+
+### Single-user mode
+- One operator owns the NotifyHub instance.
+- One project can collect events from one or many Laravel apps.
+- Use the bootstrap command to create a project and share its ingest key.
+- Keep push dispatch on by default for `error` and `critical` severities.
+
+### Team mode
+- Each product/environment gets its own project.
+- Users are added to projects with roles.
+- Sensitive details are available only to trusted members.
+- Mobile apps can show project feed, event details, and user settings.
+
 ## Scope phases
 
 ### Phase 0 - Foundation (current sprint)
@@ -53,6 +67,8 @@ Use `can_view_sensitive` as a policy override so role and exception-based access
 - [x] Validation/sanitization + ACK response contract.
 - [x] Async push dispatch scaffold.
 - [x] Feature tests for intake success and auth failure.
+- [x] Single-user bootstrap command and configuration.
+- [x] Setup guide for team expansion.
 - [ ] FCM gateway implementation and credentials wiring.
 - [ ] Mobile auth + feed/details/settings endpoints.
 
