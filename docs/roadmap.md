@@ -74,6 +74,24 @@ Use `can_view_sensitive` as a policy override so role and exception-based access
 - [x] RBAC-based sensitive context redaction for event details.
 - [x] FCM gateway implementation (credentials wiring still environment-specific).
 
+## Future deliverables (proposal)
+
+### Track A - Sender rollout
+- [ ] Publish a shared sender helper package/snippet for other Laravel apps.
+- [ ] Add sender-side retry/fallback guidance per app (sync vs queued sending).
+- [ ] Add copy-paste integration examples for exception handler, queue failures, and cron monitoring.
+
+### Track B - ACK + grouping (optional)
+- [ ] Add grouping tables and event-to-group relation.
+- [ ] Add grouped feed mode and simple group detail endpoint.
+- [ ] Add manual acknowledge endpoint for grouped incidents.
+- [ ] Add `.env` feature flag `NOTIFYHUB_ACK_GROUPING_ENABLED` to disable/enable grouping logic.
+
+### Track C - Operational polish
+- [ ] Add rate limits for ingestion endpoints by project key.
+- [ ] Add HMAC signature option for trusted sender verification.
+- [ ] Add retention policies for raw events and grouped incidents.
+
 ## Risks and decisions to confirm
 - Should event intake auth be static API key only, or also HMAC signed payloads?
 - Which severities should trigger push by default (`error+critical` vs all)?
