@@ -30,6 +30,8 @@ class EventIngestionController extends Controller
             'context' => $payload['context'] ?? null,
             'sensitive_context' => $payload['sensitive_context'] ?? null,
             'occurred_at' => $payload['occurred_at'] ?? null,
+            // TODO: Phase 0 stores fingerprint for correlation/indexed lookup only; repeated
+            // requests with the same fingerprint are not deduplicated or treated idempotently here.
             'fingerprint' => $payload['fingerprint'] ?? null,
             'source_ip' => $request->ip(),
             'acknowledged_at' => now(),
