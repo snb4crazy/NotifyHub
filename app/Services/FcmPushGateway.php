@@ -42,15 +42,27 @@ class FcmPushGateway implements PushGateway
             ->values();
 
         foreach ($devices as $device) {
-            Http::withToken($accessToken)
-                ->post(sprintf('https://fcm.googleapis.com/v1/projects/%s/messages:send', $credentials['project_id']), [
-                    'message' => [
-                        'token' => $device->fcm_token,
-                        'notification' => $payload['notification'],
-                        'data' => $payload['data'],
-                    ],
-                ])
-                ->throw();
+            try {
+                Http::withToken($accessToken)
+                    ->connectTimeout(5)
+                    ->timeout(10)
+                    ->post(sprintf('https://fcm.googleapis.com/v1/projects/%s/messages:send', $credentials['project_id']), [
+                        'message' => [
+                            'token' => $device->fcm_token,
+                            'notification' => $payload['notification'],
+                            'data' => $payload['data'],
+                        ],
+                    ])
+                    ->throw();
+            } catch (\Throwable $exception) {
+                Log::warning('Failed to send FCM push notification to device.', [
+                    'project_id' => $project->id,
+                    'event_id' => $event->public_id,
+                    'device_id' => $device->id,
+                    'fcm_token' => $device->fcm_token,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
         }
     }
 }
