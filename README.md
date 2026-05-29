@@ -80,6 +80,7 @@ php artisan test
 - `docs/api-contract.md` - intake payload contract and response examples.
 - `docs/setup.md` - single-user MVP setup and team onboarding.
 - `docs/laravel-error-flow.md` - realistic Laravel exception input, storage shape, push payload, and mobile API response examples.
+- `docs/sender-helper-and-ack-grouping.md` - ready-to-copy sender helper and optional ACK/grouping plan controlled by `.env`.
 
 ## Extending the platform
 
@@ -90,6 +91,12 @@ The code is built to swap infrastructure without rewriting the application layer
 - expand `App\Models\Project` membership and policies;
 - expand the mobile API with project membership management and richer filters;
 - add acknowledgment, grouping, and routing workflows under `/api/v1`.
+
+## Next planned enhancement set
+
+- Copy the sender helper from `docs/sender-helper-and-ack-grouping.md` into each Laravel app that should report alerts.
+- Add grouped incident view and ACK flow behind `NOTIFYHUB_ACK_GROUPING_ENABLED`.
+- Keep grouping optional so local MVP testing can run in plain event-by-event mode.
 
 ## Laravel and agent-friendly notes
 
