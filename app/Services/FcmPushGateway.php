@@ -13,8 +13,7 @@ class FcmPushGateway implements PushGateway
     public function __construct(
         protected FcmAccessTokenService $accessTokenService,
         protected MobilePushPayloadFactory $payloadFactory,
-    ) {
-    }
+    ) {}
 
     /**
      * Send a push notification to all enabled devices in the project.
@@ -54,4 +53,3 @@ class FcmPushGateway implements PushGateway
         }
     }
 }
-
