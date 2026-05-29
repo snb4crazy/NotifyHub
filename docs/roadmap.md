@@ -69,8 +69,10 @@ Use `can_view_sensitive` as a policy override so role and exception-based access
 - [x] Feature tests for intake success and auth failure.
 - [x] Single-user bootstrap command and configuration.
 - [x] Setup guide for team expansion.
-- [ ] FCM gateway implementation and credentials wiring.
-- [ ] Mobile auth + feed/details/settings endpoints.
+- [x] Mobile auth + feed/details/settings endpoints.
+- [x] Device registration endpoint.
+- [x] RBAC-based sensitive context redaction for event details.
+- [x] FCM gateway implementation (credentials wiring still environment-specific).
 
 ## Risks and decisions to confirm
 - Should event intake auth be static API key only, or also HMAC signed payloads?
