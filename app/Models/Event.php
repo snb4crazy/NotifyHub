@@ -2,28 +2,30 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(
-    'public_id',
-    'project_id',
-    'title',
-    'message',
-    'severity',
-    'application',
-    'context',
-    'sensitive_context',
-    'fingerprint',
-    'occurred_at',
-    'source_ip',
-    'acknowledged_at',
-)]
 class Event extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'public_id',
+        'project_id',
+        'event_type',
+        'title',
+        'message',
+        'severity',
+        'application',
+        'environment',
+        'context',
+        'sensitive_context',
+        'fingerprint',
+        'occurred_at',
+        'source_ip',
+        'acknowledged_at',
+    ];
 
     protected function casts(): array
     {
@@ -33,6 +35,14 @@ class Event extends Model
             'occurred_at' => 'datetime',
             'acknowledged_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Use the public UUID in API routes instead of the numeric ID.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'public_id';
     }
 
     public function project(): BelongsTo

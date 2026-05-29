@@ -26,10 +26,12 @@ class EventIngestionTest extends TestCase
         $response = $this->withHeaders([
             'X-Project-Key' => $project->ingest_key,
         ])->postJson('/api/v1/events', [
+            'event_type' => 'laravel.exception',
             'title' => '<b>Payment Failed</b>',
             'message' => 'Order #1234 <script>alert(1)</script>',
             'severity' => 'critical',
             'application' => '<i>billing-api</i>',
+            'environment' => 'production',
             'context' => ['order_id' => 1234],
             'sensitive_context' => ['trace' => ['frame1']],
             'fingerprint' => 'billing-api:payment:1234',
@@ -47,6 +49,8 @@ class EventIngestionTest extends TestCase
         $this->assertSame('Payment Failed', $event->title);
         $this->assertSame('Order #1234 alert(1)', $event->message);
         $this->assertSame('billing-api', $event->application);
+        $this->assertSame('production', $event->environment);
+        $this->assertSame('laravel.exception', $event->event_type);
         $this->assertSame($project->id, $event->project_id);
         $this->assertNotNull($event->acknowledged_at);
 
