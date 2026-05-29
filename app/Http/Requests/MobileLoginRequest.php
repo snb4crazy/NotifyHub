@@ -23,4 +23,3 @@ class MobileLoginRequest extends FormRequest
         ];
     }
 }
-
