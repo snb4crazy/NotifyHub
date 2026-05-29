@@ -58,3 +58,16 @@ Ingests an event, stores it, and enqueues push delivery.
 - Current push gateway logs payloads (FCM implementation in Phase 2).
 - Mobile feed/details/settings routes are planned for Phase 1.
 
+### Quick try commands:
+```bash
+curl -X POST "http://127.0.0.1:8000/api/v1/events" \
+  -H "Content-Type: application/json" \
+  -H "X-Project-Key: YOUR_PROJECT_INGEST_KEY" \
+  -d '{
+    "title":"Payment Failed",
+    "message":"Order #1234 failed",
+    "severity":"critical",
+    "application":"billing-api",
+    "context":{"order_id":1234}
+  }'
+```
