@@ -86,4 +86,3 @@ class EventIngestionController extends Controller
         return ($severityWeights[$event->severity] ?? 0) >= ($severityWeights[$minimumSeverity] ?? 3);
     }
 }
-

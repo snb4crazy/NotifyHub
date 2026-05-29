@@ -49,4 +49,3 @@ class EnsureProjectIngestKey
         ], Response::HTTP_UNAUTHORIZED);
     }
 }
-
