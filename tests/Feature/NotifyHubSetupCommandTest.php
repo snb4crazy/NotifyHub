@@ -28,4 +28,3 @@ class NotifyHubSetupCommandTest extends TestCase
         $this->assertSame('Personal Alerts', $project->name);
     }
 }
-

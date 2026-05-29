@@ -29,4 +29,3 @@ class NotifyHubSetupOwnerCommandTest extends TestCase
         $this->assertSame('owner', $project->users()->firstWhere('users.id', $user->id)?->pivot->role);
     }
 }
-

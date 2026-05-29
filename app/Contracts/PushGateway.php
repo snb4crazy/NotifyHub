@@ -9,4 +9,3 @@ interface PushGateway
 {
     public function sendToProjectUsers(Project $project, Event $event): void;
 }
-

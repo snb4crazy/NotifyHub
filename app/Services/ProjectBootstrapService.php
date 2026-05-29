@@ -65,5 +65,3 @@ class ProjectBootstrapService
         return Str::slug($name);
     }
 }
-
-
