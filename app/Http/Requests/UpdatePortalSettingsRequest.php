@@ -19,6 +19,7 @@ class UpdatePortalSettingsRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'timezone' => ['nullable', 'string', 'max:64'],
+            'notification_preferences' => ['nullable', 'array'],
             'notification_preferences.push_enabled' => ['nullable', 'boolean'],
             'notification_preferences.minimum_severity' => ['nullable', 'in:info,warning,error,critical'],
         ];

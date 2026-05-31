@@ -82,7 +82,7 @@ php artisan test
 ## Documentation
 
 - `docs/roadmap.md` - product phases, RBAC proposal, deliverables.
-- `docs/api-contract.md` - intake payload contract and response examples.
+- `docs/api-contract.md` - precise API contract for intake + mobile endpoints (auth, validation, filters, pagination, responses).
 - `docs/setup.md` - single-user MVP setup and team onboarding.
 - `docs/laravel-error-flow.md` - realistic Laravel exception input, storage shape, push payload, and mobile API response examples.
 - `docs/sender-helper-and-ack-grouping.md` - ready-to-copy sender helper and optional ACK/grouping plan controlled by `.env`.
