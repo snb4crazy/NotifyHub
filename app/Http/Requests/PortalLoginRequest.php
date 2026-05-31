@@ -23,4 +23,3 @@ class PortalLoginRequest extends FormRequest
         ];
     }
 }
-

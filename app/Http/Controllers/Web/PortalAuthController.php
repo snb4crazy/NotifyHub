@@ -42,4 +42,3 @@ class PortalAuthController extends Controller
         return redirect()->route('login');
     }
 }
-

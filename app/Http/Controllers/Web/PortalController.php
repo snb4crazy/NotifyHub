@@ -10,8 +10,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
+use Throwable;
 
 class PortalController extends Controller
 {
@@ -43,7 +45,7 @@ class PortalController extends Controller
             try {
                 $from = Carbon::createFromFormat('Y-m-d', (string) $request->string('from'))->startOfDay();
                 $query->where('occurred_at', '>=', $from);
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 // Ignore invalid date filters and keep the feed usable.
             }
         }
@@ -52,7 +54,7 @@ class PortalController extends Controller
             try {
                 $to = Carbon::createFromFormat('Y-m-d', (string) $request->string('to'))->endOfDay();
                 $query->where('occurred_at', '<=', $to);
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 // Ignore invalid date filters and keep the feed usable.
             }
         }
@@ -116,7 +118,7 @@ class PortalController extends Controller
     }
 
     /**
-     * @return array<string, \Illuminate\Support\Collection<int, Event>>
+     * @return array<string, Collection<int, Event>>
      */
     protected function groupEventsByDate(LengthAwarePaginator $events): array
     {

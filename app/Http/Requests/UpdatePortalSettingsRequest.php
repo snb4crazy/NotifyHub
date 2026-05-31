@@ -25,4 +25,3 @@ class UpdatePortalSettingsRequest extends FormRequest
         ];
     }
 }
-
