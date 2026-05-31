@@ -20,7 +20,7 @@ class WebPortalTest extends TestCase
         $this->get('/portal/settings')
             ->assertRedirect('/login');
     }
-    
+
     public function test_user_only_sees_events_from_their_projects(): void
     {
         $user = User::factory()->create();
@@ -66,7 +66,7 @@ class WebPortalTest extends TestCase
             ->assertSee('Own exception')
             ->assertDontSee('Other exception');
     }
-    
+
     public function test_user_cannot_open_event_details_outside_their_projects(): void
     {
         $user = User::factory()->create();
@@ -96,7 +96,33 @@ class WebPortalTest extends TestCase
             ->get('/portal/events/'.$event->public_id)
             ->assertForbidden();
     }
-    
-    
+
+    public function test_user_can_update_portal_settings(): void
+    {
+        $user = User::factory()->create([
+            'notification_preferences' => [
+                'push_enabled' => true,
+                'minimum_severity' => 'error',
+            ],
+        ]);
+        
+        $this->actingAs($user)
+            ->put('/portal/settings', [
+                'name' => 'Portal User',
+                'timezone' => 'Europe/Kyiv',
+                'notification_preferences' => [
+                    'push_enabled' => false,
+                    'minimum_severity' => 'warning',
+                ],
+            ])
+            ->assertRedirect();
+        
+        $user->refresh();
+        
+        $this->assertSame('Portal User', $user->name);
+        $this->assertSame('Europe/Kyiv', $user->timezone);
+        $this->assertSame('warning', $user->notification_preferences['minimum_severity']);
+        $this->assertFalse($user->notification_preferences['push_enabled']);
+    }
 }
 
