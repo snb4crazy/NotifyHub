@@ -317,6 +317,13 @@ Updates lightweight user settings.
 - `notification_preferences.push_enabled`: nullable, boolean
 - `notification_preferences.minimum_severity`: nullable, enum `info|warning|error|critical`
 
+#### Partial update semantics
+- Omitted top-level fields are not modified.
+- If `notification_preferences` is omitted entirely, existing preferences remain unchanged.
+- If `notification_preferences` is provided with only one nested key, only that key is updated and the other stored preference keys remain unchanged.
+- Example: sending only `{"timezone":"Europe/Kyiv"}` updates timezone only.
+- Example: sending only `{"notification_preferences":{"minimum_severity":"warning"}}` updates minimum severity and keeps the current `push_enabled` value.
+
 #### Success response (`200 OK`)
 - Same shape as `GET /mobile/settings`
 
