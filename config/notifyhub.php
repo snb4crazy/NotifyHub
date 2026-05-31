@@ -58,4 +58,3 @@ return [
         'sensitive_roles' => explode(',', env('NOTIFYHUB_SENSITIVE_ROLES', 'owner,admin,triager')),
     ],
 ];
-

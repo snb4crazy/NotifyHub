@@ -76,18 +76,18 @@ class MobileApiTest extends TestCase
         $user = User::factory()->create([
             'password' => 'password',
         ]);
-        
+
         $project = Project::query()->create([
             'name' => 'Operations',
             'slug' => 'operations',
             'ingest_key' => 'ops_ingest_key',
         ]);
-        
+
         $project->users()->attach($user->id, [
             'role' => 'viewer',
             'can_view_sensitive' => false,
         ]);
-        
+
         $event = Event::query()->create([
             'public_id' => '81994339-601c-4e01-8580-cf5193a38fc6',
             'project_id' => $project->id,
@@ -98,9 +98,9 @@ class MobileApiTest extends TestCase
             'sensitive_context' => ['trace' => ['frame1']],
             'acknowledged_at' => now(),
         ]);
-        
+
         $token = $user->createToken('viewer')->plainTextToken;
-        
+
         $details = $this->withToken($token)->getJson('/api/v1/mobile/events/'.$event->public_id);
         $details->assertOk();
         $details->assertJsonPath('data.can_view_sensitive', false);
@@ -112,20 +112,20 @@ class MobileApiTest extends TestCase
         $user = User::factory()->create([
             'password' => 'password',
         ]);
-        
+
         $project = Project::query()->create([
             'name' => 'Personal Alerts',
             'slug' => 'personal-alerts',
             'ingest_key' => 'personal_ingest_key',
         ]);
-        
+
         $project->users()->attach($user->id, [
             'role' => 'owner',
             'can_view_sensitive' => true,
         ]);
-        
+
         $token = $user->createToken('mobile')->plainTextToken;
-        
+
         $settings = $this->withToken($token)->putJson('/api/v1/mobile/settings', [
             'timezone' => 'Europe/Kyiv',
             'notification_preferences' => [
@@ -133,25 +133,24 @@ class MobileApiTest extends TestCase
                 'minimum_severity' => 'warning',
             ],
         ]);
-        
+
         $settings->assertOk();
         $settings->assertJsonPath('data.user.timezone', 'Europe/Kyiv');
         $settings->assertJsonPath('data.notification_preferences.minimum_severity', 'warning');
-        
+
         $device = $this->withToken($token)->postJson('/api/v1/mobile/devices', [
             'name' => 'My iPhone',
             'platform' => 'ios',
             'fcm_token' => 'fcm_test_token_123',
             'notifications_enabled' => true,
         ]);
-        
+
         $device->assertOk();
         $device->assertJsonPath('status', 'registered');
-        
+
         $settingsAfter = $this->withToken($token)->getJson('/api/v1/mobile/settings');
         $settingsAfter->assertOk();
         $settingsAfter->assertJsonPath('data.devices.0.platform', 'ios');
         $settingsAfter->assertJsonPath('data.projects.0.role', 'owner');
     }
 }
-

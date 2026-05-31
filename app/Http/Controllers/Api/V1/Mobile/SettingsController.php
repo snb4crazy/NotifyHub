@@ -41,4 +41,3 @@ class SettingsController extends Controller
         return new UserSettingsResource($user->load(['projects', 'devices']));
     }
 }
-

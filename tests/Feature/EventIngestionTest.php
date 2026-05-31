@@ -66,9 +66,8 @@ class EventIngestionTest extends TestCase
             'message' => 'Order #1234',
             'severity' => 'critical',
         ]);
-        
+
         $response->assertUnauthorized();
         $response->assertJsonPath('message', 'Invalid or missing project ingest key.');
     }
 }
-

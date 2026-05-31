@@ -14,9 +14,7 @@ class SendEventPushJob implements ShouldQueue
     /**
      * Create a new queue job for a stored event.
      */
-    public function __construct(public Event $event)
-    {
-    }
+    public function __construct(public Event $event) {}
 
     /**
      * Deliver the stored event through the configured push gateway.
@@ -26,4 +24,3 @@ class SendEventPushJob implements ShouldQueue
         $pushGateway->sendToProjectUsers($this->event->project, $this->event);
     }
 }
-

@@ -24,4 +24,3 @@ class UpdateUserSettingsRequest extends FormRequest
         ];
     }
 }
-

@@ -25,4 +25,3 @@ Route::prefix('v1')->group(function (): void {
         });
     });
 });
-

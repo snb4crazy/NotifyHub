@@ -23,4 +23,3 @@ class EventPolicy
         return $user->canViewSensitiveProject($event->project_id);
     }
 }
-

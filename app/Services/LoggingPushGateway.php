@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class LoggingPushGateway implements PushGateway
 {
-    public function __construct(protected MobilePushPayloadFactory $payloadFactory)
-    {
-    }
+    public function __construct(protected MobilePushPayloadFactory $payloadFactory) {}
 
     public function sendToProjectUsers(Project $project, Event $event): void
     {
@@ -27,4 +25,3 @@ class LoggingPushGateway implements PushGateway
         ]);
     }
 }
-

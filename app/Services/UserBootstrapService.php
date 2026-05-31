@@ -53,4 +53,3 @@ class UserBootstrapService
         return $user->refresh();
     }
 }
-

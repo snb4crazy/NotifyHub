@@ -39,4 +39,3 @@ class StoreEventRequest extends FormRequest
         ];
     }
 }
-

@@ -53,6 +53,3 @@ class FeedController extends Controller
         return new EventDetailResource($event->load('project'));
     }
 }
-
-
-

@@ -1,5 +1,10 @@
 # NotifyHub
 
+[![Tests](https://github.com/snb4crazy/NotifyHub/actions/workflows/tests.yml/badge.svg)](https://github.com/snb4crazy/NotifyHub/actions/workflows/tests.yml)
+[![Code Style](https://github.com/snb4crazy/NotifyHub/actions/workflows/pint.yml/badge.svg)](https://github.com/snb4crazy/NotifyHub/actions/workflows/pint.yml)
+[![PHP Version](https://img.shields.io/badge/php-%5E8.3-blue)](https://www.php.net/)
+[![License](https://img.shields.io/github/license/snb4crazy/NotifyHub)](LICENSE)
+
 NotifyHub is a central notification server for multiple Laravel applications.
 Apps POST normalized events to a single API, NotifyHub stores them, and the system
 fans out mobile push notifications via FCM.
@@ -91,6 +96,19 @@ The code is built to swap infrastructure without rewriting the application layer
 - expand `App\Models\Project` membership and policies;
 - expand the mobile API with project membership management and richer filters;
 - add acknowledgment, grouping, and routing workflows under `/api/v1`.
+
+## Laravel client package
+
+A companion package — **snb4crazy/notifyhub-laravel** — is being developed in
+`packages/notifyhub-laravel/`. Install it in any Laravel app to start sending
+events to this server without writing boilerplate:
+
+```bash
+composer require snb4crazy/notifyhub-laravel
+```
+
+See `packages/notifyhub-laravel/README.md` for full usage examples including
+the exception handler integration, queue-job failures, and cron monitoring.
 
 ## Next planned enhancement set
 

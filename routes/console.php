@@ -23,7 +23,7 @@ Artisan::command('notifyhub:setup {--name= : Human-readable project name} {--slu
             'email' => $this->option('owner-email'),
             'password' => $this->option('owner-password'),
         ]);
-    } catch (\Throwable $throwable) {
+    } catch (Throwable $throwable) {
         $this->error($throwable->getMessage());
 
         return 1;
@@ -44,4 +44,3 @@ Artisan::command('notifyhub:setup {--name= : Human-readable project name} {--slu
 
     return 0;
 })->purpose('Bootstrap a NotifyHub project for MVP or team usage');
-
