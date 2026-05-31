@@ -67,6 +67,36 @@ class WebPortalTest extends TestCase
             ->assertDontSee('Other exception');
     }
     
+    public function test_user_cannot_open_event_details_outside_their_projects(): void
+    {
+        $user = User::factory()->create();
+        $owner = User::factory()->create();
+        $privateProject = Project::query()->create([
+            'name' => 'Private',
+            'slug' => 'private',
+            'ingest_key' => 'ingest_private_key',
+        ]);
+        
+        $privateProject->users()->attach($owner->id, [
+            'role' => 'owner',
+            'can_view_sensitive' => true,
+        ]);
+        
+        $event = Event::query()->create([
+            'public_id' => '1867ed18-4f52-4ad6-a96f-45f52169e174',
+            'project_id' => $privateProject->id,
+            'event_type' => 'laravel.exception',
+            'title' => 'Restricted',
+            'message' => 'No access expected',
+            'severity' => 'error',
+            'occurred_at' => now(),
+        ]);
+        
+        $this->actingAs($user)
+            ->get('/portal/events/'.$event->public_id)
+            ->assertForbidden();
+    }
+    
     
 }
 
