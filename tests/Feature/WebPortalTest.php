@@ -124,5 +124,29 @@ class WebPortalTest extends TestCase
         $this->assertSame('warning', $user->notification_preferences['minimum_severity']);
         $this->assertFalse($user->notification_preferences['push_enabled']);
     }
+
+    public function test_updating_name_and_timezone_only_does_not_reset_notification_preferences(): void
+    {
+        $user = User::factory()->create([
+            'notification_preferences' => [
+                'push_enabled' => true,
+                'minimum_severity' => 'critical',
+            ],
+        ]);
+
+        $this->actingAs($user)
+            ->put('/portal/settings', [
+                'name' => 'Settings Only',
+                'timezone' => 'Europe/Kyiv',
+            ])
+            ->assertRedirect();
+
+        $user->refresh();
+
+        $this->assertSame('Settings Only', $user->name);
+        $this->assertSame('Europe/Kyiv', $user->timezone);
+        $this->assertTrue($user->notification_preferences['push_enabled']);
+        $this->assertSame('critical', $user->notification_preferences['minimum_severity']);
+    }
 }
 
