@@ -3,7 +3,7 @@
 [![Tests](https://github.com/snb4crazy/NotifyHub/actions/workflows/tests.yml/badge.svg)](https://github.com/snb4crazy/NotifyHub/actions/workflows/tests.yml)
 [![Code Style](https://github.com/snb4crazy/NotifyHub/actions/workflows/pint.yml/badge.svg)](https://github.com/snb4crazy/NotifyHub/actions/workflows/pint.yml)
 [![PHP Version](https://img.shields.io/badge/php-%5E8.3-blue)](https://www.php.net/)
-[![License](https://img.shields.io/github/license/snb4crazy/NotifyHub)](LICENSE)
+[![License](https://img.shields.io/github/license/snb4crazy/NotifyHub)](./LICENSE)
 
 NotifyHub is a central notification server for multiple Laravel applications.
 Apps POST normalized events to a single API, NotifyHub stores them, and the system
