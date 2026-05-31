@@ -103,14 +103,12 @@ class PortalController extends Controller
         $user->name = $payload['name'];
         $user->timezone = $payload['timezone'] ?? null;
 
-        $user->notification_preferences = array_merge(
-            $user->notification_preferences ?? [],
-            [
-                'push_enabled' => (bool) ($payload['notification_preferences']['push_enabled'] ?? false),
-                'minimum_severity' => $payload['notification_preferences']['minimum_severity']
-                    ?? ($user->notification_preferences['minimum_severity'] ?? config('notifyhub.push.minimum_severity', 'error')),
-            ],
-        );
+        if (array_key_exists('notification_preferences', $payload)) {
+            $user->notification_preferences = array_merge(
+                $user->notification_preferences ?? [],
+                $payload['notification_preferences'] ?? [],
+            );
+        }
 
         $user->save();
 
