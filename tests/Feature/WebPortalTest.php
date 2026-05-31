@@ -34,12 +34,12 @@ class WebPortalTest extends TestCase
             'slug' => 'other-project',
             'ingest_key' => 'ingest_other_project_key',
         ]);
-        
+
         $ownProject->users()->attach($user->id, [
             'role' => 'viewer',
             'can_view_sensitive' => false,
         ]);
-        
+
         Event::query()->create([
             'public_id' => 'bfb52f8f-7f3c-4299-9e42-88506c9271a7',
             'project_id' => $ownProject->id,
@@ -49,7 +49,7 @@ class WebPortalTest extends TestCase
             'severity' => 'error',
             'occurred_at' => now(),
         ]);
-        
+
         Event::query()->create([
             'public_id' => '06a8e620-f728-4d2f-b8d7-4d83bcfbd42c',
             'project_id' => $otherProject->id,
@@ -59,7 +59,7 @@ class WebPortalTest extends TestCase
             'severity' => 'critical',
             'occurred_at' => now(),
         ]);
-        
+
         $this->actingAs($user)
             ->get('/portal')
             ->assertOk()
@@ -76,12 +76,12 @@ class WebPortalTest extends TestCase
             'slug' => 'private',
             'ingest_key' => 'ingest_private_key',
         ]);
-        
+
         $privateProject->users()->attach($owner->id, [
             'role' => 'owner',
             'can_view_sensitive' => true,
         ]);
-        
+
         $event = Event::query()->create([
             'public_id' => '1867ed18-4f52-4ad6-a96f-45f52169e174',
             'project_id' => $privateProject->id,
@@ -91,7 +91,7 @@ class WebPortalTest extends TestCase
             'severity' => 'error',
             'occurred_at' => now(),
         ]);
-        
+
         $this->actingAs($user)
             ->get('/portal/events/'.$event->public_id)
             ->assertForbidden();
@@ -105,7 +105,7 @@ class WebPortalTest extends TestCase
                 'minimum_severity' => 'error',
             ],
         ]);
-        
+
         $this->actingAs($user)
             ->put('/portal/settings', [
                 'name' => 'Portal User',
@@ -116,9 +116,9 @@ class WebPortalTest extends TestCase
                 ],
             ])
             ->assertRedirect();
-        
+
         $user->refresh();
-        
+
         $this->assertSame('Portal User', $user->name);
         $this->assertSame('Europe/Kyiv', $user->timezone);
         $this->assertSame('warning', $user->notification_preferences['minimum_severity']);
@@ -149,4 +149,3 @@ class WebPortalTest extends TestCase
         $this->assertSame('critical', $user->notification_preferences['minimum_severity']);
     }
 }
-
