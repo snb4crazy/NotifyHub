@@ -20,7 +20,53 @@ class WebPortalTest extends TestCase
         $this->get('/portal/settings')
             ->assertRedirect('/login');
     }
-
+    
+    public function test_user_only_sees_events_from_their_projects(): void
+    {
+        $user = User::factory()->create();
+        $ownProject = Project::query()->create([
+            'name' => 'Own Project',
+            'slug' => 'own-project',
+            'ingest_key' => 'ingest_own_project_key',
+        ]);
+        $otherProject = Project::query()->create([
+            'name' => 'Other Project',
+            'slug' => 'other-project',
+            'ingest_key' => 'ingest_other_project_key',
+        ]);
+        
+        $ownProject->users()->attach($user->id, [
+            'role' => 'viewer',
+            'can_view_sensitive' => false,
+        ]);
+        
+        Event::query()->create([
+            'public_id' => 'bfb52f8f-7f3c-4299-9e42-88506c9271a7',
+            'project_id' => $ownProject->id,
+            'event_type' => 'laravel.exception',
+            'title' => 'Own exception',
+            'message' => 'This must be visible',
+            'severity' => 'error',
+            'occurred_at' => now(),
+        ]);
+        
+        Event::query()->create([
+            'public_id' => '06a8e620-f728-4d2f-b8d7-4d83bcfbd42c',
+            'project_id' => $otherProject->id,
+            'event_type' => 'laravel.exception',
+            'title' => 'Other exception',
+            'message' => 'This must stay hidden',
+            'severity' => 'critical',
+            'occurred_at' => now(),
+        ]);
+        
+        $this->actingAs($user)
+            ->get('/portal')
+            ->assertOk()
+            ->assertSee('Own exception')
+            ->assertDontSee('Other exception');
+    }
+    
     
 }
 
