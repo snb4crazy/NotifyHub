@@ -116,6 +116,10 @@ curl -X POST "http://127.0.0.1:8000/api/v1/mobile/login" \
 
 Then call the mobile feed with the returned bearer token.
 
+Reference contract for mobile implementation:
+- `docs/api-contract.md` (authoritative request/response shapes)
+- `docs/laravel-error-flow.md` (end-to-end examples from sender to mobile)
+
 ## 8) Optional real FCM configuration
 
 Keep `NOTIFYHUB_PUSH_DRIVER=log` while testing locally.
@@ -133,9 +137,8 @@ You can also provide `NOTIFYHUB_FCM_CREDENTIALS_PATH=/absolute/path/to/service-a
 
 ## 9) Next recommended steps
 
-- Add mobile auth with Laravel Sanctum.
-- Build project feed and event details endpoints.
-- Add device registration for FCM tokens.
-- Replace the logging push adapter with real FCM delivery.
-- Add policies so stack traces can be redacted by role.
+- Implement mobile client UI flows using `docs/api-contract.md`.
+- Add refresh/polling strategy in mobile feed.
+- Replace the logging push adapter with real FCM delivery in non-local environments.
+- Add grouped incident/ACK flow if noise becomes high (`docs/sender-helper-and-ack-grouping.md`).
 
