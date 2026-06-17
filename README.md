@@ -5,38 +5,44 @@
 [![PHP Version](https://img.shields.io/badge/php-%5E8.3-blue)](https://www.php.net/)
 [![License](https://img.shields.io/github/license/snb4crazy/NotifyHub)](./LICENSE)
 
-NotifyHub is a central notification server for multiple Laravel applications.
-Apps POST normalized events to a single API, NotifyHub stores them, and the system
-fans out mobile push notifications via FCM.
+NotifyHub is a central error and alert intake server for Laravel applications.
+Your apps send normalized events to one API endpoint, NotifyHub stores them,
+exposes a secure feed for web/mobile clients, and dispatches push notifications.
 
-The MVP is intentionally simple so one person can run it quickly, but the codebase
-is structured to grow into a multi-user team platform with project membership,
-redaction rules, and mobile feed APIs.
+## Current capabilities
 
-## What is implemented now
+- Ingestion API: `POST /api/v1/events` with project-level key auth (`X-Project-Key`).
+- Mobile API (Sanctum): login, feed, event details, settings, and device registration.
+- Web portal (session auth): event timeline, filters, event details, and user settings.
+- Queue-backed push dispatch with pluggable gateway (`log` or Firebase Cloud Messaging).
+- Role-aware sensitive context access via project membership policy.
+- One-command bootstrap for first project + owner account (`notifyhub:setup`).
 
-- `POST /api/v1/events` for event intake.
-- Project-scoped ingest key authentication via `X-Project-Key`.
-- Validation, sanitization, and event persistence.
-- Queued push-dispatch scaffold.
-- Bootstrap command for creating the first project and owner account.
-- Sanctum-protected mobile API for feed, details, settings, and devices.
-- Docs for MVP setup and team expansion.
+## Architecture at a glance
 
-## Quick start
+1. Laravel app sends event payload to `POST /api/v1/events`.
+2. NotifyHub validates and persists the event.
+3. `SendEventPushJob` is queued when push is enabled.
+4. Mobile/web clients read scoped events by project membership.
+5. Sensitive fields are redacted for users without permission.
+
+## Quick start (local)
 
 ```bash
 composer install
 cp .env.example .env
 php artisan key:generate
 php artisan migrate
-php artisan notifyhub:setup --name="Personal Alerts" --slug=personal-alerts --owner-email="owner@example.com" --owner-password="secret-pass"
+php artisan notifyhub:setup --name="Personal Alerts" --slug=personal-alerts --owner-name="Owner" --owner-email="owner@example.com" --owner-password="secret-pass"
+php artisan queue:work
 php artisan serve
 ```
 
-## MVP setup for one user
+After setup, keep the printed ingest key and use it in sender apps as `X-Project-Key`.
 
-Use the defaults in `config/notifyhub.php` and `.env`:
+## Configuration essentials
+
+Use these baseline values in `.env` for a simple single-project install:
 
 ```env
 NOTIFYHUB_MODE=single
@@ -48,84 +54,51 @@ NOTIFYHUB_PUSH_MIN_SEVERITY=error
 NOTIFYHUB_SENSITIVE_ROLES=owner,admin,triager
 ```
 
-Then send events using the ingest key created by `php artisan notifyhub:setup`.
+To send real push notifications, switch to `NOTIFYHUB_PUSH_DRIVER=fcm` and provide Firebase credentials via `NOTIFYHUB_FCM_*` variables (or `NOTIFYHUB_FCM_CREDENTIALS_PATH`).
 
-## Team setup
+## API surface
 
-For multiple users and projects, follow `docs/setup.md` and `docs/roadmap.md`.
-Recommended team pattern:
+- `POST /api/v1/events`
+- `POST /api/v1/mobile/login`
+- `DELETE /api/v1/mobile/logout`
+- `GET /api/v1/mobile/feed`
+- `GET /api/v1/mobile/events/{public_id}`
+- `GET|PUT /api/v1/mobile/settings`
+- `POST /api/v1/mobile/devices`
 
-- one project per product or environment;
-- one ingest key per project;
-- role-based access (`owner`, `admin`, `triager`, `viewer`);
-- redact `sensitive_context` for users without permission.
+Authoritative request/response contract: `docs/api-contract.md`.
 
-## API overview
+## Web portal
 
-- `POST /api/v1/events` - intake events from Laravel apps.
-- `POST /api/v1/mobile/login` - issue a mobile bearer token.
-- `GET /api/v1/mobile/feed` - paginated feed from the user's projects.
-- `GET /api/v1/mobile/events/{public_id}` - event details with RBAC-aware redaction.
-- `GET|PUT /api/v1/mobile/settings` - current profile/preferences.
-- `POST /api/v1/mobile/devices` - register an FCM token.
+- `GET /login` for session login.
+- `GET /portal` for the event feed with filters.
+- `GET /portal/events/{event}` for event details.
+- `GET|PUT /portal/settings` for user profile and notification preferences.
 
-See `docs/api-contract.md` for the current request/response format.
+## Companion package
 
-## Testing
-
-Run the full suite:
-
-```bash
-php artisan test
-```
-
-## Documentation
-
-- `docs/roadmap.md` - product phases, RBAC proposal, deliverables.
-- `docs/api-contract.md` - precise API contract for intake + mobile endpoints (auth, validation, filters, pagination, responses).
-- `docs/setup.md` - single-user MVP setup and team onboarding.
-- `docs/laravel-error-flow.md` - realistic Laravel exception input, storage shape, push payload, and mobile API response examples.
-- `docs/sender-helper-and-ack-grouping.md` - ready-to-copy sender helper and optional ACK/grouping plan controlled by `.env`.
-
-## Extending the platform
-
-The code is built to swap infrastructure without rewriting the application layer:
-
-- replace `App\Services\LoggingPushGateway` with a real FCM adapter;
-- or enable the bundled FCM HTTP v1 adapter with `NOTIFYHUB_PUSH_DRIVER=fcm` and Firebase service account credentials;
-- expand `App\Models\Project` membership and policies;
-- expand the mobile API with project membership management and richer filters;
-- add acknowledgment, grouping, and routing workflows under `/api/v1`.
-
-## Laravel client package
-
-A companion package — **snb4crazy/notifyhub-laravel** — is being developed in
-`packages/notifyhub-laravel/`. Install it in any Laravel app to start sending
-events to this server without writing boilerplate:
+The in-repo package `packages/notifyhub-laravel/` helps sender applications report events with less boilerplate.
 
 ```bash
 composer require snb4crazy/notifyhub-laravel
 ```
 
-See `packages/notifyhub-laravel/README.md` for full usage examples including
-the exception handler integration, queue-job failures, and cron monitoring.
+See `packages/notifyhub-laravel/README.md` for integration examples.
 
-## Next planned enhancement set
+## Documentation map
 
-- Copy the sender helper from `docs/sender-helper-and-ack-grouping.md` into each Laravel app that should report alerts.
-- Add grouped incident view and ACK flow behind `NOTIFYHUB_ACK_GROUPING_ENABLED`.
-- Keep grouping optional so local MVP testing can run in plain event-by-event mode.
+- `docs/api-contract.md` - API contract and response shapes.
+- `docs/setup.md` - install and bootstrap walkthrough.
+- `docs/laravel-error-flow.md` - end-to-end sender to client flow.
+- `docs/roadmap.md` - planned phases and expansion direction.
+- `docs/sender-helper-and-ack-grouping.md` - optional sender helper and ACK/grouping strategy.
 
-## Laravel and agent-friendly notes
+## Testing
 
-Key classes and functions include detailed docblocks so humans and AI helpers can
-trace the flow quickly:
+```bash
+php artisan test
+```
 
-- `app/Http/Controllers/Api/V1/EventIngestionController.php`
-- `app/Http/Middleware/EnsureProjectIngestKey.php`
-- `app/Http/Requests/StoreEventRequest.php`
-- `app/Services/ProjectBootstrapService.php`
-- `app/Jobs/SendEventPushJob.php`
 
 ## License
 
