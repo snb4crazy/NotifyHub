@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'demo_api' => [
+        'base_url' => env('DEMO_API_BASE_URL', 'https://api.example.test'),
+    ],
+
 ];
