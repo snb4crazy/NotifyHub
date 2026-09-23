@@ -65,7 +65,25 @@ jobs:
         run: php artisan migrate --force
 
       - name: Run tests
-        run: php artisan test --log-junit=build/logs/junit.xml --coverage-clover=build/logs/clover.xml | tee build/logs/test-output.txt
+        run: php artisan test --log-junit=build/logs/junit.xml --coverage-clover=build/logs/clover.xml --coverage-html=build/logs/coverage-html --coverage-text=build/logs/coverage.txt | tee build/logs/test-output.txt
+
+      - name: Add coverage summary
+        if: always()
+        run: |
+          {
+            echo "## Coverage summary"
+            echo ""
+            if [ -f build/logs/coverage.txt ]; then
+              echo "- Raw coverage report: build/logs/coverage.txt"
+              echo "- HTML coverage report: build/logs/coverage-html/index.html"
+              COVERAGE_LINE=$(grep -Eo 'Lines:[[:space:]]+[0-9.]+%' build/logs/coverage.txt | tail -n 1 || true)
+              if [ -n "$COVERAGE_LINE" ]; then
+                echo "- $COVERAGE_LINE"
+              fi
+            else
+              echo "- Coverage output was not generated."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Write job summary
         if: always()
@@ -78,7 +96,7 @@ jobs:
             echo "- PHP: \\`${{ matrix.php }}\\`"
             echo "- Database: SQLite file (\\`database/database.sqlite\\`)"
             echo "- Composer cache: enabled"
-            echo "- Artifacts: \\`build/logs\\`"
+            echo "- Artifacts: JUnit, coverage text, Clover XML, HTML coverage"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload test artifacts
@@ -86,7 +104,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ci-test-artifacts-php${{ matrix.php }}
-          path: build/logs
+          path: |
+            build/logs/junit.xml
+            build/logs/test-output.txt
+            build/logs/coverage.txt
+            build/logs/clover.xml
+            build/logs/coverage-html
           if-no-files-found: warn
           retention-days: 7
 
