@@ -15,4 +15,3 @@ class LearningFailureDemoTest extends TestCase
         $this->assertTrue(true);
     }
 }
-

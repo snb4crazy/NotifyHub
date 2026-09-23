@@ -21,7 +21,7 @@ class ExternalStatusClientTest extends TestCase
             ], 200),
         ]);
 
-        $client = new ExternalStatusClient();
+        $client = new ExternalStatusClient;
 
         $this->assertSame([
             'status' => 'ok',
@@ -48,9 +48,8 @@ class ExternalStatusClientTest extends TestCase
             ], 503),
         ]);
 
-        $client = new ExternalStatusClient();
+        $client = new ExternalStatusClient;
 
         $client->fetchStatus();
     }
 }
-

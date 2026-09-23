@@ -28,4 +28,3 @@ class UserDatabaseTest extends TestCase
         $this->assertTrue(Hash::check('secret-password', $user->password));
     }
 }
-
