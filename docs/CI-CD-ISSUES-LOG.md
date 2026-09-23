@@ -97,6 +97,20 @@ Use this document to track problems discovered while building CI and test infras
   - confirm CI marks the job as failed and uploads logs/artifacts
 - Notes: Do not merge this into main.
 
+### 8. Manual failure demo workflow
+- Date: 2026-09-23
+- Area: workflow learning
+- Problem: Need a safe way to demonstrate a failing test without breaking normal CI.
+- Root cause: production CI must remain green, so the failure must be gated.
+- Fix:
+  - add a manual-only `workflow_dispatch` demo workflow
+  - gate the failure behind `DEMO_FAILING_TEST=1`
+  - upload the failure log as an artifact
+- Verification:
+  - run the demo workflow manually in GitHub Actions
+  - confirm the workflow fails as expected and preserves the log artifact
+- Notes: Keep this workflow isolated from the main CI trigger path.
+
 ## Questions to decide later
 - Do we want file-based SQLite or in-memory SQLite in CI?
 - Do we want coverage generation now or only basic test execution?
