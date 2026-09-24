@@ -14,7 +14,7 @@ class ExternalStatusClient
      */
     public function fetchStatus(): array
     {
-        $response = Http::baseUrl(config('services.demo_api.base_url'))
+        $response = Http::baseUrl((string) config('services.demo_api.base_url', 'https://api.example.test'))
             ->acceptJson()
             ->timeout(5)
             ->get('/status');
