@@ -13,6 +13,7 @@ Build a production-safe CI pipeline for this Laravel app that:
 - Laravel app with PHPUnit configured
 - SQLite test settings already present in `phpunit.xml`
 - GitHub Actions workflows are now in place for CI and the learning demo
+- CI is split into dedicated workflows for tests, lint, and static analysis
 - CI includes coverage/artifact output, a Pint lint job, a PHP 8.3/8.4 test matrix, and a separate PHPStan/Larastan job
 - Minimal test coverage has been improved with database-backed and mocked external API tests
 
@@ -81,7 +82,7 @@ Add a service-unavailable test only when there is a real service to protect:
 
 ## Suggested workflow design
 
-### Workflow 1: CI
+### Workflow 1: tests
 Trigger:
 - pull requests
 - pushes to main branch
@@ -97,10 +98,35 @@ Jobs:
   - upload artifacts
   - publish summary
 
-2. Optional `lint`
-  - run Pint or static analysis if added later
+### Workflow 2: lint
+Trigger:
+- pull requests
+- pushes to main branch
 
-### Workflow 2: learning-failure-demo
+Jobs:
+1. `pint`
+  - checkout
+  - setup PHP
+  - install Composer deps with cache
+  - run Pint
+  - upload artifact
+  - publish summary
+
+### Workflow 3: static-analysis
+Trigger:
+- pull requests
+- pushes to main branch
+
+Jobs:
+1. `phpstan`
+  - checkout
+  - setup PHP
+  - install Composer deps with cache
+  - run PHPStan/Larastan
+  - upload artifact
+  - publish summary
+
+### Workflow 4: learning-failure-demo
 Optional and temporary:
 - a separate workflow or branch that contains a deliberately failing test
 - used only for learning
@@ -131,8 +157,8 @@ Optional and temporary:
 - concurrency cancellation prevents redundant runs
 
 ## Optional next steps
-1. Add a stronger static-analysis tool if desired, such as PHPStan or Larastan
-2. Decide whether to keep the manual failure demo workflow long-term or move it to a learning branch
-3. Expand the test matrix further only if the app needs additional PHP/runtime coverage
-4. Add more feature tests around real application behavior as the app grows
-5. Consider raising the PHPStan level gradually once the codebase stays green at level 5
+1. Decide whether to keep the manual failure demo workflow long-term or move it to a learning branch
+2. Expand the test matrix further only if the app needs additional PHP/runtime coverage
+3. Add more feature tests around real application behavior as the app grows
+4. Consider raising the PHPStan level gradually once the codebase stays green at level 5
+5. Consider dependency update guardrails (Dependabot/Renovate + scheduled CI)
