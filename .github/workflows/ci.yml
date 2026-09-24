@@ -69,6 +69,64 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
+  static-analysis:
+    name: Static analysis (PHPStan / Larastan)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          ini-values: memory_limit=-1
+
+      - name: Resolve Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run PHPStan
+        run: |
+          mkdir -p build/logs
+          set -o pipefail
+          ./vendor/bin/phpstan analyse --error-format=table --memory-limit=1G | tee build/logs/phpstan.txt
+
+      - name: Write static-analysis summary
+        if: always()
+        run: |
+          {
+            echo "## Static analysis summary"
+            echo ""
+            echo "- Tooling: PHPStan + Larastan"
+            echo "- Level: 5"
+            echo "- Config: phpstan.neon"
+            echo "- Artifact: build/logs/phpstan.txt"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload static-analysis artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpstan-output
+          path: build/logs/phpstan.txt
+          if-no-files-found: warn
+          retention-days: 7
+
   test:
     name: Test (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
