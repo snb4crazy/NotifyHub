@@ -1,7 +1,7 @@
 # NotifyHub
 
 [![CI Tests](https://github.com/snb4crazy/NotifyHub/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/snb4crazy/NotifyHub/actions/workflows/tests.yml)
-[![Lint](https://github.com/snb4crazy/NotifyHub/actions/workflows/lint.yml/badge.svg?branch=master)](https://github.com/snb4crazy/NotifyHub/actions/workflows/lint.yml)
+[![Code Style](https://github.com/snb4crazy/NotifyHub/actions/workflows/pint.yml/badge.svg?branch=master)](https://github.com/snb4crazy/NotifyHub/actions/workflows/pint.yml)
 [![Static Analysis](https://github.com/snb4crazy/NotifyHub/actions/workflows/static-analysis.yml/badge.svg?branch=master)](https://github.com/snb4crazy/NotifyHub/actions/workflows/static-analysis.yml)
 [![PHP Version](https://img.shields.io/badge/php-%5E8.3-blue)](https://www.php.net/)
 [![License](https://img.shields.io/github/license/snb4crazy/NotifyHub)](https://github.com/snb4crazy/NotifyHub)

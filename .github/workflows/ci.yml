@@ -16,6 +16,6 @@ jobs:
             echo "This workflow is kept only for backward compatibility."
             echo "Use the dedicated workflows instead:"
             echo "- tests.yml"
-            echo "- lint.yml"
+            echo "- pint.yml"
             echo "- static-analysis.yml"
           } >> "$GITHUB_STEP_SUMMARY"

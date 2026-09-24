@@ -98,7 +98,7 @@ Jobs:
   - upload artifacts
   - publish summary
 
-### Workflow 2: lint
+### Workflow 2: pint
 Trigger:
 - pull requests
 - pushes to main branch
