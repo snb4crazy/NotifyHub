@@ -8,10 +8,12 @@ class LearningFailureDemoTest extends TestCase
 {
     public function test_intentional_failure_demo(): void
     {
-        if (filter_var(env('DEMO_FAILING_TEST', false), FILTER_VALIDATE_BOOL)) {
+        $shouldFail = filter_var(getenv('DEMO_FAILING_TEST') ?: false, FILTER_VALIDATE_BOOL);
+
+        if ($shouldFail) {
             $this->fail('Intentional failure for CI learning demo.');
         }
 
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 }
