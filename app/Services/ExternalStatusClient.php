@@ -20,7 +20,9 @@ class ExternalStatusClient
             ->get('/status');
 
         if ($response->successful()) {
-            return $response->json() ?? [];
+$payload = $response->json();
+
+            return is_array($payload) ? $payload : [];
         }
 
         throw new RuntimeException(sprintf(
