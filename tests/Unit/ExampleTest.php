@@ -11,6 +11,6 @@ class ExampleTest extends TestCase
      */
     public function test_that_true_is_true(): void
     {
-    public function test_notifyhub_name_is_normalized(): void
+        $this->assertSame('notifyhub', strtolower('NotifyHub'));
     }
 }
