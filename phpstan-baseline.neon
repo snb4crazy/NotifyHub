@@ -1,0 +1,127 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Parameter \#1 \$groupBy of method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:groupBy\(\) expects \(callable\(mixed, int\|string\)\: string\)\|list\<Closure\|string\>\|string, Closure\(App\\Models\\Event\)\: string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Web/PortalController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/EventDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/EventDetailResource.php
+
+		-
+			message: '#^Cannot call method toIso8601String\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Resources/EventDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/MobileFeedEventResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/MobileFeedEventResource.php
+
+		-
+			message: '#^Cannot call method toIso8601String\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Resources/MobileFeedEventResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/UserSettingsResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$last_seen_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/UserSettingsResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/UserSettingsResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$notifications_enabled\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/UserSettingsResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$pivot\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/UserSettingsResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$platform\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/UserSettingsResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/UserSettingsResource.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 2
+			path: app/Http/Resources/UserSettingsResource.php
+
+		-
+			message: '#^Parameter \#1 \$project of method App\\Contracts\\PushGateway\:\:sendToProjectUsers\(\) expects App\\Models\\Project, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Jobs/SendEventPushJob.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Support\\HigherOrderCollectionProxy\<string, Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:\$devices\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/FcmPushGateway.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MobilePushPayloadFactory.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/NotifyHubSetupOwnerCommandTest.php
+
+		-
+			message: '#^Offset ''minimum_severity'' does not exist on string\.$#'
+			identifier: offsetAccess.notFound
+			count: 2
+			path: tests/Feature/WebPortalTest.php
+
+		-
+			message: '#^Offset ''push_enabled'' does not exist on string\.$#'
+			identifier: offsetAccess.notFound
+			count: 2
+			path: tests/Feature/WebPortalTest.php
