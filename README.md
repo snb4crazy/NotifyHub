@@ -1,11 +1,10 @@
 # NotifyHub
 
-[![CI](https://github.com/snb4crazy/NotifyHub/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/snb4crazy/NotifyHub/actions/workflows/ci.yml)
-[![Lint](https://img.shields.io/badge/lint-pint-1C1C1C)](https://github.com/snb4crazy/NotifyHub/actions/workflows/ci.yml)
-[![Static Analysis](https://img.shields.io/badge/static%20analysis-phpstan%20%2B%20larastan-5A67D8)](https://github.com/snb4crazy/NotifyHub/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-phpunit-4E56A6)](https://github.com/snb4crazy/NotifyHub/actions/workflows/ci.yml)
+[![CI Tests](https://github.com/snb4crazy/NotifyHub/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/snb4crazy/NotifyHub/actions/workflows/tests.yml)
+[![Lint](https://github.com/snb4crazy/NotifyHub/actions/workflows/lint.yml/badge.svg?branch=master)](https://github.com/snb4crazy/NotifyHub/actions/workflows/lint.yml)
+[![Static Analysis](https://github.com/snb4crazy/NotifyHub/actions/workflows/static-analysis.yml/badge.svg?branch=master)](https://github.com/snb4crazy/NotifyHub/actions/workflows/static-analysis.yml)
 [![PHP Version](https://img.shields.io/badge/php-%5E8.3-blue)](https://www.php.net/)
-[![License](https://img.shields.io/github/license/snb4crazy/NotifyHub)](./LICENSE)
+[![License](https://img.shields.io/github/license/snb4crazy/NotifyHub)](https://github.com/snb4crazy/NotifyHub)
 
 NotifyHub is a central error and alert intake server for Laravel applications.
 Your apps send normalized events to one API endpoint, NotifyHub stores them,
