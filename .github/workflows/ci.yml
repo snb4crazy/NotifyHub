@@ -1,0 +1,21 @@
+name: CI (Legacy)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  info:
+    name: Legacy CI notice
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write summary
+        run: |
+          {
+            echo "## CI workflow moved"
+            echo ""
+            echo "This workflow is kept only for backward compatibility."
+            echo "Use the dedicated workflows instead:"
+            echo "- tests.yml"
+            echo "- pint.yml"
+            echo "- static-analysis.yml"
+          } >> "$GITHUB_STEP_SUMMARY"

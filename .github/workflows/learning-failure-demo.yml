@@ -1,0 +1,63 @@
+name: Learning Failure Demo
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: learning-failure-demo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  demo-failure:
+    name: Intentional failing test demo
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      APP_ENV: testing
+      DEMO_FAILING_TEST: '1'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: sqlite3, pdo_sqlite, mbstring, dom, fileinfo
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Prepare SQLite database
+        run: |
+          mkdir -p database build/logs
+          touch database/database.sqlite
+
+      - name: Run the intentionally failing demo test
+        run: |
+          set -o pipefail
+          php artisan test --filter=LearningFailureDemoTest 2>&1 | tee build/logs/demo-failure.txt
+
+      - name: Write demo summary
+        if: always()
+        run: |
+          {
+            echo "## Learning failure demo"
+            echo ""
+            echo "- This workflow is manual-only via workflow_dispatch."
+            echo "- It intentionally runs \\`LearningFailureDemoTest\\` with \\`DEMO_FAILING_TEST=1\\`."
+            echo "- The expected result is a failed test run for learning purposes."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload demo log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: learning-failure-demo-log
+          path: build/logs/demo-failure.txt
+          if-no-files-found: warn
+          retention-days: 7
+
