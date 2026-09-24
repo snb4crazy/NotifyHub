@@ -1,0 +1,120 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.3'
+            coverage: true
+          - php: '8.4'
+            coverage: false
+
+    env:
+      APP_ENV: testing
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ${{ github.workspace }}/database/database.sqlite
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: sqlite, pdo_sqlite, mbstring, dom, fileinfo
+          tools: composer:v2
+          coverage: xdebug
+          ini-values: memory_limit=-1, post_max_size=256M, upload_max_filesize=256M
+
+      - name: Resolve Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Prepare SQLite database
+        run: |
+          mkdir -p database build/logs
+          touch database/database.sqlite
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Run tests
+        run: |
+          set -o pipefail
+          if [ "${{ matrix.coverage }}" = "true" ]; then
+            php artisan test --log-junit=build/logs/junit.xml --coverage-clover=build/logs/clover.xml --coverage-html=build/logs/coverage-html --coverage-text=build/logs/coverage.txt | tee build/logs/test-output.txt
+          else
+            php artisan test --log-junit=build/logs/junit.xml | tee build/logs/test-output.txt
+          fi
+
+      - name: Add coverage summary
+        if: ${{ always() && matrix.coverage }}
+        run: |
+          {
+            echo "## Coverage summary"
+            echo ""
+            if [ -f build/logs/coverage.txt ]; then
+              echo "- Raw coverage report: build/logs/coverage.txt"
+              echo "- HTML coverage report: build/logs/coverage-html/index.html"
+              COVERAGE_LINE=$(grep -Eo 'Lines:[[:space:]]+[0-9.]+%' build/logs/coverage.txt | tail -n 1 || true)
+              if [ -n "$COVERAGE_LINE" ]; then
+                echo "- $COVERAGE_LINE"
+              fi
+            else
+              echo "- Coverage output was not generated."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Write test summary
+        if: always()
+        run: |
+          {
+            echo "## Test summary"
+            echo ""
+            echo "- Workflow: \`${{ github.workflow }}\`"
+            echo "- Ref: \`${{ github.ref }}\`"
+            echo "- PHP: \`${{ matrix.php }}\`"
+            echo "- Coverage: ${{ matrix.coverage }}"
+            echo "- Database: SQLite file (\`database/database.sqlite\`)"
+            echo "- Composer cache: enabled"
+            echo "- Artifacts: JUnit, test output, and coverage files when enabled"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts-php${{ matrix.php }}
+          path: build/logs
+          if-no-files-found: warn
+          retention-days: 7
+
