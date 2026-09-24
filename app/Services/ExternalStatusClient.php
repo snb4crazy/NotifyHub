@@ -20,7 +20,7 @@ class ExternalStatusClient
             ->get('/status');
 
         if ($response->successful()) {
-$payload = $response->json();
+            $payload = $response->json();
 
             return is_array($payload) ? $payload : [];
         }
