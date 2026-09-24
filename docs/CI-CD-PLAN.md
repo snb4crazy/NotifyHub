@@ -13,7 +13,7 @@ Build a production-safe CI pipeline for this Laravel app that:
 - Laravel app with PHPUnit configured
 - SQLite test settings already present in `phpunit.xml`
 - GitHub Actions workflows are now in place for CI and the learning demo
-- CI includes coverage/artifact output, a Pint lint job, and a PHP 8.3/8.4 test matrix
+- CI includes coverage/artifact output, a Pint lint job, a PHP 8.3/8.4 test matrix, and a separate PHPStan/Larastan job
 - Minimal test coverage has been improved with database-backed and mocked external API tests
 
 ## Implemented so far
@@ -23,6 +23,7 @@ Build a production-safe CI pipeline for this Laravel app that:
 - Coverage summaries and uploaded artifacts
 - Pint lint job
 - PHP 8.3 and 8.4 test matrix
+- PHPStan/Larastan static-analysis job
 - Manual-only intentional failure demo workflow
 - Mocked external API client and service-unavailable test
 
@@ -134,3 +135,4 @@ Optional and temporary:
 2. Decide whether to keep the manual failure demo workflow long-term or move it to a learning branch
 3. Expand the test matrix further only if the app needs additional PHP/runtime coverage
 4. Add more feature tests around real application behavior as the app grows
+5. Consider raising the PHPStan level gradually once the codebase stays green at level 5

@@ -111,6 +111,20 @@ Use this document to track problems discovered while building CI and test infras
   - confirm the workflow fails as expected and preserves the log artifact
 - Notes: Keep this workflow isolated from the main CI trigger path.
 
+### 9. Abandoned Larastan package warning
+- Date: 2026-09-23
+- Area: static analysis dependency
+- Problem: Composer reported that `nunomaduro/larastan` is abandoned.
+- Root cause: the package name has moved to `larastan/larastan`.
+- Fix:
+  - require the maintained `larastan/larastan` package
+  - remove `nunomaduro/larastan` from the dependency graph
+  - keep PHPStan configured through `phpstan.neon`
+- Verification:
+  - run `composer analyse`
+  - confirm PHPStan/Larastan finishes with no errors and no abandoned-package warning
+- Notes: This is a good example of why CI setup should stay current with upstream package names.
+
 ## Questions to decide later
 - Do we want file-based SQLite or in-memory SQLite in CI?
 - Do we want coverage generation now or only basic test execution?
